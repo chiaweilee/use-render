@@ -8,12 +8,16 @@ export default function useRender(children: any, el = document.body as any) {
   const div: any = document.createElement('div');
   el.appendChild(div);
 
-  ReactDOM.render(children, div);
-
-  return function unmount() {
+  function unmount() {
     ReactDOM.unmountComponentAtNode(div);
     if (div && div.parentNode) {
       div.parentNode.removeChild(div);
     }
   }
+
+  ReactDOM.render(React.cloneElement(children, {
+    __unmount__: unmount,
+  }), div);
+
+  return unmount;
 }
